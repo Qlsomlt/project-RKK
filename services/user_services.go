@@ -11,6 +11,7 @@ type UserService interface {
 	Register(name, email, password string) error
 	Login(email, password string) (string, error)
 	GetAllUsers(requesterRole string) ([]domain.User, error)
+	Logout(authHeader string) error
 }
 
 type userService struct {

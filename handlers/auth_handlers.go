@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"kode/services"
+	"kode/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -48,4 +49,21 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+func (h *AuthHandler) Logout(c *gin.Context) {
+
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		utils.Error(c, 401, "authorization required")
+		return
+	}
+
+	err := h.authService.Logout(authHeader)
+	if err != nil {
+		utils.Error(c, 400, "logout failed")
+		return
+	}
+
+	utils.OK(c, "logged out successfully")
 }
