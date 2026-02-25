@@ -5,6 +5,8 @@ import (
 	"kode/repositories"
 )
 
+//menkonfigurasi kembali service user
+
 type SessionService interface {
 	Logout(userID uint, tokenID string) error
 	LogoutAll(userID uint) error
