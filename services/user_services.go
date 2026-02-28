@@ -11,6 +11,9 @@ type UserService interface {
 	Register(name, email, password string) error
 	Login(email, password string) (string, error)
 	GetAllUsers(requesterRole string) ([]domain.User, error)
+
+	Logout(userID uint, tokenID string) error
+	LogoutAll(userID uint) error
 }
 
 type userService struct {
@@ -52,4 +55,23 @@ func (s *userService) GetAllUsers(requesterRole string) ([]domain.User, error) {
 		return nil, errors.New("forbidden")
 	}
 	return s.repo.FindAll()
+}
+
+func (s *userService) Logout(userID uint, tokenID string) error {
+	session, err := s.repo.FindByTokenID(tokenID)
+	if err != nil {
+		return err
+	}
+
+	// Pastikan session milik user
+	if session.UserID != userID {
+		return errors.New("unauthorized logout attempt")
+	}
+
+	return s.repo.Revoke(tokenID)
+}
+
+// LogoutAll implements [SessionService].
+func (s *userService) LogoutAll(userID uint) error {
+	return s.repo.RevokeAll(userID)
 }
